@@ -1,25 +1,47 @@
 import SteamUser from 'steam-user'
 import logOnOptions from './modules/login.js'
 
-const client = new SteamUser()
+const bot = new SteamUser()
 
-client.logOn(logOnOptions)
+bot.logOn(logOnOptions)
 
-client.on('loggedOn', () => {
-    client.setPersona(SteamUser.EPersonaState.Online)
+// Logged -> Change status to online
+bot.on('loggedOn', () => {
+    bot.setPersona(SteamUser.EPersonaState.Online)
 })
 
-client.on('friendRelationship', (steamid, relationship) => {
+// Accept Friend Invite 
+bot.on('friendRelationship', (steamid, relationship) => {
     if (relationship === 2) {
-        client.addFriend(steamid)
-        client.chatMessage(steamid, 'Hello there! Thanks for adding me!')
+        bot.addFriend(steamid)
+        bot.chatMessage(
+            steamid,
+            `
+                Hi! Thanks for adding me! 
+                I'm Price Bot!
+            `
+        )
     }
 })
 
-client.on('friendsList', () => {
-    let friends = Object.keys(client.myFriends).filter(steamId => client.myFriends[steamId] == SteamUser.EFriendRelationship.Friend)
-    friends.forEach(e => {
-        client.chat.sendFriendMessage(e, "Hello, world!")
-    })
-    console.log('All Friends: ' + friends.length)
+// Global Mensage
+// bot.on('friendsList', () => {
+//     const friends = Object.keys(bot.myFriends).filter(steamId => bot.myFriends[steamId] == SteamUser.EFriendRelationship.Friend)
+//     friends.forEach(e => {
+//         bot.chat.sendFriendMessage(e, "Salve")
+//     })
+//     console.log('All Friends: ' + friends.length)
+// })
+
+// Chat
+bot.on('friendMessage', (steamid, message) => {
+    message = message.toLowerCase()
+    if (message == 'hi') {
+        bot.chat.sendFriendMessage(steamid, "Hi! How are You?")
+    }
+})
+
+bot.on('groupList', () => {
+    console.log(Object.keys(bot.myGroups)[0])
+    bot.chat.sendChatMessage('103582791471570174', '0', "hello")
 })
